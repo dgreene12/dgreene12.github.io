@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <title>Drew Greene - Personal Portfolio</title>
+    <link href="styles.css" rel="stylesheet">
+</head>
+
+<body class="index-page">
+    <nav class="navbar">
+        <div class="nav-container">
+            <a class="navbar-brand" href="index.html">Drew Greene</a>
+            <ul class="navbar-nav">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="resume.html">Resume/CV</a></li>
+                <li><a href="projects.html">Projects</a></li>
+                <li><a href="service.html">Service</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <h1>Welcome!</h1>
+            <p>Hi, I'm Drew, a senior at Duke University interested in higher education access and inclusion,
+                educational inequality, university-community partnerships, and faculty teaching.</p>
+                <div class="social-icons">
+                    <a href="https://www.linkedin.com/in/drewgreene1/" class="social-icon" target="_blank">
+                        <img src="https://i.imgur.com/J6a41eC.png" alt="LinkedIn">
+                    </a>
+                    <a href="https://github.com/dgreene12" class="social-icon github" target="_blank">
+                        <img src="https://i.imgur.com/A9eXjLt.png"  alt="GitHub">
+                    </a>
+                </div>
+            <a class="button" href="contact.html">Contact Me</a>
+        </div>
+    </header>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navbar = document.querySelector('.navbar');
+            window.onscroll = function() {
+                if (window.pageYOffset > 100) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            };
+        });
+    </script>
+</body>
+</html>

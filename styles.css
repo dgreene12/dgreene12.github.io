@@ -1,0 +1,284 @@
+:root {
+    --white: #ffffff;
+    --picton-blue: #00a7e1;
+    --rich-black: #00171f;
+    --prussian-blue: #003459;
+    --cerulean: #007ea7;
+    --text-color: #333333;
+    --bg-color: #ffffff;
+    --navbar-color: #007ea7; /* Changed to cerulean */
+    --footer-color: #333333;
+    --button-hover-color: #0056b3;
+    --navbar-hover-bg: #e7e7e7;
+    --index-navbar-text-color: #333333; /* New color for index page navbar text */
+}
+
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    line-height: 1.6;
+}
+
+/* Navbar styles */
+.navbar {
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 2rem 1.5rem; /* Increased padding for more space */
+    transition: background-color 0.3s ease, padding 0.3s ease;
+    background-color: var(--navbar-color); /* Set navbar background color */
+    border-bottom: 1px solid var(--rich-black); /* Updated border color */
+}
+
+.index-page .navbar {
+    position: fixed;
+    border-bottom: none;
+    background-color: transparent; /* Make navbar transparent on index page */
+}
+
+.navbar.scrolled {
+    background-color: var(--navbar-color);
+    padding: 1.5rem 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1200px;
+    background-color: var(--navbar-color); /* Set nav container background color */
+}
+
+.index-page .nav-container {
+    background-color: transparent; /* Make nav container transparent on index page */
+}
+
+.navbar-brand {
+    font-size: 2.5rem; /* Increased font size for brand */
+    color: var(--white); /* Change brand color to white for better contrast */
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.index-page .navbar-brand {
+    color: var(--index-navbar-text-color); /* Change brand color for index page */
+}
+
+.navbar-brand:hover {
+    color: var(--picton-blue);
+}
+
+.navbar-nav {
+    list-style: none;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-nav li {
+    padding: 0 25px; /* Increased padding for more space */
+}
+
+.navbar-nav a {
+    font-size: 1.3rem; /* Increased font size */
+    color: var(--white); /* Change nav link color to white for better contrast */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.index-page .navbar-nav a {
+    color: var(--index-navbar-text-color); /* Change nav link color for index page */
+}
+
+.navbar-nav a:hover {
+    color: var(--picton-blue);
+}
+
+/* Container styles */
+.container {
+    max-width: 70%;
+    margin: auto;
+    padding: 0 15px;
+}
+
+/* Hero section */
+.hero {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), 
+                url('https://i.imgur.com/MoQiaX0.jpg') no-repeat center top;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.hero h1 {
+    margin-bottom: 0.8rem;
+    font-size: 3rem;
+    color: var(--text-color);
+}
+
+.hero p {
+    font-size: 1.4rem;
+    margin-bottom: 2rem;
+}
+
+/* Button styles */
+.button {
+    background-color: var(--picton-blue);
+    color: white;
+    padding: 12px 25px;
+    text-decoration: none;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.button:hover {
+    background-color: var(--button-hover-color);
+    transform: translateY(-2px);
+}
+
+/* Social icons */
+.social-icons {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.social-icon {
+    margin: 0 10px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.social-icon img {
+    width: 50px;
+    height: auto;
+}
+
+.social-icon.github img {
+    position: relative;
+    top: -5px;
+}
+
+/* About page specific styles */
+.about-page .container {
+    max-width: 800px;
+    margin: auto;
+    padding: 0px 15px;
+    text-align: center;
+}
+
+.about-page h2 {
+    font-size: 2.8rem;
+    margin-bottom: 1rem;
+    color: var(--prussian-blue);
+}
+
+.about-page p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+.about-image img {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    display: block;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Projects page specific styles */
+.projects-section {
+    margin-bottom: 40px;
+}
+
+.list-group {
+    list-style-type: none;
+    padding: 0;
+}
+
+.list-group-item {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: box-shadow 0.3s ease;
+}
+
+.list-group-item:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.list-group-item h5 {
+    margin-top: 0;
+    color: var(--picton-blue);
+}
+
+.list-group-item a {
+    color: var(--picton-blue);
+    text-decoration: none;
+}
+
+.list-group-item a:hover {
+    text-decoration: underline;
+}
+
+iframe {
+    width: 100%;
+    height: 600px;
+    border: none;
+    margin-bottom: 30px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 1.5rem;
+    }
+
+    .navbar-brand {
+        font-size: 2rem;
+    }
+
+    .navbar-nav {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .navbar-nav li {
+        padding: 10px 0;
+    }
+
+    .hero {
+        padding: 0;
+        height: 70vh;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1.2rem;
+    }
+
+    .about-page .container {
+        padding: 30px 10px;
+    }
+}
