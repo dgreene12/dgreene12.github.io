@@ -246,6 +246,29 @@ iframe {
     margin-bottom: 30px;
 }
 
+.location {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30px;
+    font-size: 1.2rem;
+    color: var(--text-color);
+    font-weight: bold; /* Makes the text more prominent */
+}
+
+.pin-icon {
+    width: 20px;
+    height: 35px;
+    margin-right: 10px;
+    vertical-align: middle; /* Ensures the pin is aligned with the text */
+}
+
+.location span {
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .navbar {
