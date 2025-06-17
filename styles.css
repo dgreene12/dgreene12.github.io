@@ -120,7 +120,7 @@ body {
 
 /* Hero section */
 .hero {
-    background: linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)),
+    background: linear-gradient(rgba(255,255,255,0.88), rgba(255,255,255,0.88)),
                 url('finland-2.jpg') center/cover no-repeat;
     background-position: center center;
     padding: 30px 20px; /* ensure inner spacing works on all screens */
