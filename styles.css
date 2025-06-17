@@ -19,12 +19,12 @@ html, body {
 }
 
 body {
+    font-family: 'Segoe UI', sans-serif;
     margin: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
     color: var(--text-color);
     background-color: var(--bg-color);
     line-height: 1.6;
-}
+  }
 
 /* Navbar styles */
 .navbar {
@@ -191,10 +191,17 @@ body {
     margin-left: 14px;
   }
   
-  .social-icon.email:hover i {
-    color: #0077cc;
-  }
-  
+  .social-icon:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+    opacity: 0.85; /* optional: adds a subtle fade effect */
+    cursor: pointer;
+}
+
+.social-icon img,
+.social-icon i {
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
 
   .map-hover {
     position: relative;
@@ -217,7 +224,7 @@ body {
   .map-hover:hover .map-preview {
     display: block;
   }
-  
+
 /* About page specific styles */
 .about-page .container {
     max-width: 90%;
