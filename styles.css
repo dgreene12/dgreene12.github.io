@@ -6,11 +6,11 @@
     --cerulean: #007ea7;
     --text-color: #333333;
     --bg-color: #ffffff;
-    --navbar-color: #007ea7; /* Changed to cerulean */
+    --navbar-color: #007ea7;
     --footer-color: #333333;
     --button-hover-color: #0056b3;
     --navbar-hover-bg: #e7e7e7;
-    --index-navbar-text-color: #333333; /* New color for index page navbar text */
+    --index-navbar-text-color: #333333;
 }
 
 html, body {
@@ -31,16 +31,16 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    padding: 2rem 1.5rem; /* Increased padding for more space */
+    padding: 2rem 1.5rem;
     transition: background-color 0.3s ease, padding 0.3s ease;
-    background-color: var(--navbar-color); /* Set navbar background color */
-    border-bottom: 1px solid var(--rich-black); /* Updated border color */
+    background-color: var(--navbar-color);
+    border-bottom: 1px solid var(--rich-black);
 }
 
 .index-page .navbar {
     position: fixed;
     border-bottom: none;
-    background-color: transparent; /* Make navbar transparent on index page */
+    background-color: transparent;
 }
 
 .navbar.scrolled {
@@ -56,23 +56,23 @@ body {
     margin: 0 auto;
     width: 100%;
     max-width: 1200px;
-    background-color: var(--navbar-color); /* Set nav container background color */
+    background-color: var(--navbar-color);
 }
 
 .index-page .nav-container {
-    background-color: transparent; /* Make nav container transparent on index page */
+    background-color: transparent;
 }
 
 .navbar-brand {
-    font-size: 2.5rem; /* Increased font size for brand */
-    color: var(--white); /* Change brand color to white for better contrast */
+    font-size: 2.5rem;
+    color: var(--white);
     text-decoration: none;
     font-weight: bold;
     transition: color 0.3s ease;
 }
 
 .index-page .navbar-brand {
-    color: var(--index-navbar-text-color); /* Change brand color for index page */
+    color: var(--index-navbar-text-color);
 }
 
 .navbar-brand:hover {
@@ -86,41 +86,50 @@ body {
 }
 
 .navbar-nav li {
-    padding: 0 25px; /* Increased padding for more space */
+    padding: 0 25px;
 }
 
 .navbar-nav a {
-    font-size: 1.3rem; /* Increased font size */
-    color: var(--white); /* Change nav link color to white for better contrast */
+    font-size: 1.3rem;
+    color: var(--white);
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .index-page .navbar-nav a {
-    color: var(--index-navbar-text-color); /* Change nav link color for index page */
+    color: var(--index-navbar-text-color);
 }
 
 .navbar-nav a:hover {
     color: var(--picton-blue);
 }
 
+.tagline {
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
 /* Container styles */
 .container {
-    max-width: 70%;
+    max-width: 95%;
     margin: auto;
     padding: 0 15px;
 }
 
 /* Hero section */
 .hero {
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), 
-                url('https://i.imgur.com/MoQiaX0.jpg') no-repeat center top;
-    background-size: cover;
-    height: 100vh;
+    background: linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)),
+                url('finland-2.jpg') center/cover no-repeat;
+    background-position: center center;
+    padding: 30px 20px; /* ensure inner spacing works on all screens */
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
+    backdrop-filter: blur(2px);
 }
 
 .hero h1 {
@@ -173,11 +182,47 @@ body {
     top: -5px;
 }
 
+.social-icon.email i {
+    font-size: 50px;       /* slightly larger than your 50px image icons */
+    color: #333;           /* or #000 if the others are darker */
+    vertical-align: middle;
+    position: relative;
+    top: -3px;             /* nudge it up to align baseline */
+    margin-left: 14px;
+  }
+  
+  .social-icon.email:hover i {
+    color: #0077cc;
+  }
+  
+
+  .map-hover {
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+  }
+  
+  .map-preview {
+    position: absolute;
+    top: 120%;
+    left: 0;
+    width: 300px;
+    display: none;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+  }
+  
+  .map-hover:hover .map-preview {
+    display: block;
+  }
+  
 /* About page specific styles */
 .about-page .container {
-    max-width: 800px;
+    max-width: 90%;
     margin: auto;
-    padding: 0px 15px;
+    padding: 0 15px;
     text-align: center;
 }
 
@@ -187,19 +232,39 @@ body {
     color: var(--prussian-blue);
 }
 
-.about-page p {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    margin-bottom: 20px;
+.about-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.about-section.reverse .about-image {
+    order: 2;
+}
+
+.about-image {
+    flex: 0 0 45%;
+    max-width: 45%;
 }
 
 .about-image img {
     width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-    display: block;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.about-text {
+    flex: 0 0 45%;
+    max-width: 50%;
+    padding: 20px;
+    text-align: left;
+}
+
+.about-text p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 20px;
 }
 
 /* Projects page specific styles */
@@ -246,6 +311,7 @@ iframe {
     margin-bottom: 30px;
 }
 
+/* Location styles */
 .location {
     display: flex;
     align-items: center;
@@ -253,14 +319,13 @@ iframe {
     margin-top: 30px;
     font-size: 1.2rem;
     color: var(--text-color);
-    font-weight: bold; /* Makes the text more prominent */
 }
 
 .pin-icon {
     width: 20px;
     height: 35px;
     margin-right: 10px;
-    vertical-align: middle; /* Ensures the pin is aligned with the text */
+    vertical-align: middle;
 }
 
 .location span {
@@ -269,6 +334,43 @@ iframe {
     text-align: center;
 }
 
+.intro-section {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    padding: 40px;
+    max-width: 1200px;
+    margin: auto;
+    flex-wrap: wrap; /* allows stacking on smaller screens */
+  }
+  
+  .headshot {
+    border-radius: 8px;
+    width: 400px;
+    height: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .learn-more-wrapper {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .learn-more {
+    font-weight: 500;
+    text-decoration: none;
+    color: #0077cc;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1.125rem; /* ~18px */
+    transition: color 0.2s ease;
+  }
+  
+  .learn-more:hover {
+    color: #004e99;
+  }
+  
 /* Responsive design */
 @media (max-width: 768px) {
     .navbar {
@@ -288,10 +390,11 @@ iframe {
         padding: 10px 0;
     }
 
-    .hero {
-        padding: 0;
-        height: 70vh;
-    }
+
+        .hero {
+          padding: 60px 20px;
+          background-position: center top;
+        }
 
     .hero h1 {
         font-size: 2.5rem;
@@ -303,5 +406,18 @@ iframe {
 
     .about-page .container {
         padding: 30px 10px;
+    }
+
+    .about-section {
+        flex-direction: column;
+    }
+
+    .about-image,
+    .about-text {
+        max-width: 100%;
+    }
+
+    .about-image {
+        margin-bottom: 20px;
     }
 }
