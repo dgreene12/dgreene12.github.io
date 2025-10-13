@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Resume Timeline</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background: #f4f4f6;
+    }
+
+    .timeline-container {
+        width: 90vw;
+        max-width: 1400px;
+        margin: auto;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 1rem;
+      justify-content: space-between;
+      align-items: stretch;
+      margin-bottom: 1.5rem;
+      width: 100%;
+    }
+
+    .filter-group {
+      flex: 1;
+      background: white;
+      padding: 0.75rem;
+        border-radius: 8px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+    }
+
+
+    .filters {
+      align-items: stretch; /* ensures flex children match tallest height */
+    }
+    
+    .filter-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .filter-title {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .filter-option {
+      display: block;
+      margin: 0.3rem 0;
+    }
+
+    svg {
+      width: 100%;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .entry-bar {
+      rx: 10;
+      ry: 10;
+      cursor: pointer;
+      stroke: #333;
+      stroke-width: 1.5px;
+    }
+
+    .entry-bar.dimmed {
+      fill: #d6d6d6;
+      opacity: 0.3;
+    }
+
+    .entry-link {
+        display: inline-block;
+        font-size: 0.75rem;
+        color: #0077cc;
+        text-decoration: underline;
+        margin-top: 2px;
+    }
+
+    .entry-link:hover {
+        text-decoration: none;
+        color: #005fa3;
+    }
+
+    .tooltip {
+      position: absolute;
+      padding: 0.8rem 1rem;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      color: #333;
+      font-size: 0.95rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      pointer-events: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      visibility: hidden;
+      transition: all 0.2s ease;
+      max-width: 280px;
+    }
+
+    .tooltip strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #0077cc;
+    }
+
+    .tooltip .location {
+      font-style: italic;
+      margin-bottom: 6px;
+      color: #555;
+    }
+
+    .tooltip .skill-pill {
+      display: inline-block;
+      margin: 2px 4px 0 0;
+      padding: 2px 8px;
+      background: #0077cc;
+      color: white;
+      font-size: 0.75rem;
+      border-radius: 12px;
+    }
+    
+    .filter-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .filter-pill {
+      border: 1px solid #0077cc;
+      background: white;
+      color: #0077cc;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.9rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .filter-pill.active {
+      background: #0077cc;
+      color: white;
+    }
+    
+    .present-bar {
+      stroke: #0077cc;
+      stroke-width: 2px;
+      stroke-dasharray: 6 3;
+    }
+
+    .present-bar.community {
+      fill: url(#stripePatternOrange);
+    }
+    
+    .present-bar {
+        stroke: #0077cc;
+        stroke-width: 2px;
+        stroke-dasharray: 6 3;
+    }
+    
+    .entry-bar.bachelor { fill:#4caf50; }   
+    .entry-bar.master   { fill:#4caf50 }
+    
+    .present-bar.master {
+      fill: url(#stripePatternGreen);
+    }
+
+    .tech-pill {
+        display: inline-block;
+        margin: 2px 4px 0 0;
+        padding: 2px 8px;
+        background: #e0e0e0;
+        color: #333;
+        font-size: 0.75rem;
+        border-radius: 12px;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .skill-section .label {
+        font-weight: bold;
+        display: inline-block;
+        margin-right: 6px;
+        color: #555;
+    }
+
+    .skill-section {
+        margin-top: 6px;
+        margin-bottom: 4px;
+    }
+
+    .filter-pill:hover {
+        background: #0077cc;
+        color: white;
+        border-color: #005fa3;
+    }
+
+
+
+    @media (max-width: 768px) {
+      .filters {
+        flex-wrap: wrap;
+      }
+    
+      .filter-group {
+        flex: 1 1 100%;
+      }
+    }
+
+    .group-label {
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    @media (min-width: 1600px) {
+        .layout         { display:flex; gap:2rem; }          /* wrapper */
+        .filters        { flex-direction:column; width:260px; }
+        #timeline       { flex:1; }                          /* svg fills remaining width */
+    }
+
+  </style>
+</head>
+<body>
+  <div class="timeline-container">
+    <div class="layout">
+        <div class="filters">
+            <div class="filter-group">
+              <div class="filter-title">Education Type</div>
+              <div class="filter-options">
+                <button class="filter-pill active" data-group="edu" data-value="All">All</button>
+                <button class="filter-pill" data-group="edu" data-value="Higher Education">Higher Education</button>
+                <button class="filter-pill" data-group="edu" data-value="K-12 Education">K-12 Education</button>
+              </div>
+            </div>
+          
+            <div class="filter-group">
+              <div class="filter-title">Policy Area</div>
+              <div class="filter-options">
+                <button class="filter-pill active" data-group="policy" data-value="All">All</button>
+                <button class="filter-pill" data-group="policy" data-value="Federal Policy">Federal Policy</button>
+                <button class="filter-pill" data-group="policy" data-value="State Policy">State Policy</button>
+                <button class="filter-pill" data-group="policy" data-value="Finance">Finance</button>
+                <button class="filter-pill" data-group="policy" data-value="Institutional Policy">Institutional Policy</button>
+                <button class="filter-pill" data-group="policy" data-value="Communities">Communities</button>
+              </div>
+            </div>
+          
+            <div class="filter-group">
+              <div class="filter-title">Research & Analysis</div>
+              <div class="filter-options">
+                <button class="filter-pill active" data-group="research" data-value="All">All</button>
+                <button class="filter-pill" data-group="research" data-value="Institutional Research">Institutional Research</button>
+                <button class="filter-pill" data-group="research" data-value="Program Evaluation">Program Evaluation</button>
+                <button class="filter-pill" data-group="research" data-value="Data Analysis">Data Analysis</button>
+                <button class="filter-pill" data-group="research" data-value="Data Visualization">Data Visualization</button>
+              </div>
+            </div>
+          
+            <div class="filter-group">
+              <div class="filter-title">Methodology & Pedagogy</div>
+              <div class="filter-options">
+                <button class="filter-pill active" data-group="method" data-value="All">All</button>
+                <button class="filter-pill" data-group="method" data-value="Quantitative Research">Quantitative Research</button>
+                <button class="filter-pill" data-group="method" data-value="Qualitative Research">Qualitative Research</button>
+                <button class="filter-pill" data-group="method" data-value="University Pedagogy">University Pedagogy</button>
+              </div>
+            </div>
+          </div>          
+
+    <svg id="timeline"></svg>
+      
+
+</div>
+
+    <div class="tooltip" id="tooltip"></div>
+  </div>
+<script>
+  const data = [
+    { title   : "BA, Public Policy",   org  : "Duke University", location: "Durham, NC", start   : 2021, end     : 2024 + 4/12, row     : 0, type    : "bachelor", skills  : [], logo: "logos/duke.png" },
+    { title   : "MA, Educational Science",   org : "University of Turku", location: "Turku, Finland", start   : 2024 + 8/12, end     : "present", row     : 0, type    : "master", skills  : [] , logo: "logos/utu2.png"},
+    {
+        title: 'Research Assistant, Doctoral Supervisors Academy',
+        org: 'UTUPEDA, University of Turku',
+        location: 'Turku, Finland',
+        start: 2025 + 8 / 12,
+        end: 2025 + 12 / 12,
+        skills: ['Higher Education', 'University Pedagogy', 'Program Evaluation', 'Qualitative Research', 'Institutional Policy'],
+        technologies: ['NVivo', 'Excel'],
+        cluster: 'research',
+        logo: "logos/utu2.png"
+    },
+    {
+        title: 'Government Relations & Policy Intern',
+        org: 'Association of American Universities',
+        location: 'Washington, DC',
+        start: 2025 + 4 / 12,
+        end: "present",
+        skills: ['Federal Policy', 'Higher Education', 'Institutional Policy', 'Data Visualization', 'Quantitative Research', 'Finance', 'Institutional Research', 'Data Analysis'],
+        technologies: ['PowerPoint', 'Excel', 'Datawrapper', 'IPEDS'],
+        cluster: 'policy',
+        logo: "logos/aau.png"
+    },
+    {
+        title: 'Data Analyst, Summer Session',
+        org: 'Duke Office of Continuing Studies',
+        location: 'Remote',
+        start: 2024 + 1 / 12,
+        end: 2024 + 7 / 12,
+        skills: ['Higher Education', 'Institutional Research', 'Data Analysis', 'Data Visualization', 'Program Evaluation', 'Quantitative Research'],
+        technologies: ['Excel', 'JavaScript', 'HTML', 'CSS', 'Python'],
+        cluster: 'research',
+        logo: "logos/duke.png"
+    },
+    {
+        title: 'Legal Education Research Intern',
+        org: 'AccessLex Institute',
+        location: 'Remote',
+        start: 2023 + 5 / 12,
+        end: 2024 + 4 / 12,
+        skills: ['Higher Education', 'Quantitative Research', 'Data Analysis', 'Data Visualization', 'Institutional Policy', 'Program Evaluation', 'Finance', 'Institutional Research'],
+        technologies: ['R', 'Excel', 'R Shiny', 'Power BI', 'Qualtrics', 'IPEDS'],
+        cluster: 'research',
+        logo: "logos/accesslex_logo.svg"
+    },
+    {
+        title: 'Data Evaluation Specialist',
+        org: 'Center for Supportive Schools',
+        location: 'Remote',
+        start: 2024 + 1 / 12,
+        end: 2024 + 4 / 12,
+        skills: ['K-12 Education', 'Data Analysis', 'Data Visualization', 'Program Evaluation', 'Quantitative Research'],
+        technologies: ['R', 'Python', 'Google Sheets'],
+        cluster: 'research',
+        logo: "logos/css.png"
+    },
+    {
+        title: 'Government Relations Intern',
+        org: 'Duke Office of Government and State Relations',
+        location: 'Durham, NC',
+        start: 2023 + 5 / 12,
+        end: 2023 + 12 / 12,
+        skills: ['State Policy', 'Federal Policy', 'Institutional Policy', 'Higher Education', 'Data Visualization', 'Data Analysis', 'Quantitative Research', 'Qualitative Research'],
+        technologies: ['Excel', 'Word'],
+        cluster: 'policy',
+        logo: "logos/duke.png"
+    },
+    {
+        title: 'Research Assistant, Dean of Academic Affairs',
+        org: 'Trinity College of Arts & Sciences, Duke University',
+        location: 'Durham, NC',
+        start: 2022 + 1 / 12,
+        end: 2024 + 4 / 12,
+        skills: ['Higher Education', 'Institutional Research', 'Program Evaluation', 'Qualitative Research', 'Data Analysis', 'Institutional Policy'],
+        technologies: ['Excel', 'Qualtrics'],
+        cluster: 'research',
+        logo: "logos/trinity.png"
+    },
+    {
+        title: 'Team Lead & Researcher',
+        org: 'Durham University-Assisted Community Schools Research Collective',
+        location: 'Durham, NC',
+        start: 2021 + 5 / 12,
+        end: 2024 + 6 / 12,
+        skills: ['K-12 Education', 'Higher Education', 'Data Visualization', 'State Policy', 'Data Analysis', 'Program Evaluation', 'Qualitative Research', "Communities"],
+        technologies: ['R', 'CSS', 'JavaScript', 'Git', 'R Shiny'],
+        cluster: 'research',
+        logo: "logos/srcuacs.png"
+    },
+    {
+        title: 'Researcher, Certificate of College Teaching',
+        org: 'Duke Graduate School',
+        location: 'Durham, NC',
+        start: 2022 + 5 / 12,
+        end: 2023 + 6 / 12,
+        skills: ['Higher Education', 'University Pedagogy', 'Qualitative Research', 'Program Evaluation', 'Institutional Policy', 'Data Analysis'],
+        technologies: ['NVivo', 'Word'],
+        cluster: 'research',
+        logo: "logos/dgs.png"
+    },
+    {
+        title: 'Research Assistant, Charles Clotfelter',
+        org: 'Sanford School of Public Policy, Duke University',
+        location: 'Durham, NC',
+        start: 2023 + 1 / 12,
+        end: 2023 + 6 / 12,
+        skills: ['State Policy', 'Quantitative Research', 'Finance', 'Data Analysis'],
+        technologies: ['Excel', 'Stata', 'Python'],
+        cluster: 'research',
+        logo: "logos/sanfordlogo.png"
+    },
+    {
+        title: 'Youth Soccer Coach, U11 Boys',
+        org: 'Idrottsföreningen Kamraterna i Åbo',
+        location: 'Turku, Finland',
+        start: 2024 + 8 / 12,
+        end: "present",
+        type: 'community',
+        skills: ['Communities', 'K-12 Education'],
+        logo: "logos/Åbo_IFK.png"
+    },
+    {
+        title: 'Youth Basketball Coach, Ages 5-6',
+        org: 'Durham Parks and Recreation',
+        location: 'Durham, NC',
+        start: 2021 + 5 / 12,
+        end: 2024 + 5/12,
+        type: 'community',
+        skills: ['Communities', 'K-12 Education'],
+        logo: "logos/c2i.jpg"
+    },
+    {
+        title: 'Chair, International Orientation',
+        org: 'Duke International Student Center',
+        location: 'Durham, NC',
+        start: 2021 + 6 / 12,
+        end: 2024 + 8/12,
+        type: 'community',
+        skills: ['Higher Education'],
+        logo: "logos/disc.jpg"
+    },
+    {
+        title: 'Trustee',
+        org: 'Duke University',
+        location: 'Durham, NC',
+        start: 2024 + 7 / 12,
+        end: "present",
+        skills: ['Higher Education', 'Institutional Policy', 'Finance'],
+        technologies: ['BoardEffect'],
+        cluster: 'policy',
+        logo: "logos/duke.png"
+    },
+    {
+        title: "Front Desk Assistant",
+        org: "Office of the President, Duke University",
+        location: "Durham, NC",
+        start: 2023 + 8 / 12,
+        end: 2024 + 6 / 12, 
+        skills: ['Higher Education', 'Institutional Policy'],
+        technologies: ['Excel', 'Acrobat', 'Canva'],
+        cluster: 'policy',
+        logo: "logos/dukepresident.png"
+    },
+    {
+        title: "Administrative Aide and Middle School Math Teacher",
+        org: "Mississippi Teacher Corps, University of Mississippi",
+        location: "Holly Springs, MS",
+        start: 2022 + 5 / 12,
+        end: 2022 + 8  / 12, 
+        skills: ['K-12 Education', 'Data Analysis'],
+        technologies: ['Excel', 'Word'],
+        cluster: 'policy',
+        logo: "logos/miss2.png"
+    }
+    ];
+
+  data.forEach(d => d.skills = d.skills.map(s => s.toLowerCase()));
+  function toTitleCase(str) {
+    return str
+      .split(' ')
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ');
+  }
+
+  const svg = d3.select("#timeline");
+  function getContainerWidth() {
+  return document.querySelector("#timeline").getBoundingClientRect().width;
+}
+
+let width = getContainerWidth();
+  const yStep = 50;
+  const margin = { top: 40, right: 30, bottom: 30, left: 30 };
+  const height = margin.top + margin.bottom + yStep * data.length + 80;  // extra space for legend
+  const xScale = d3.scaleLinear()
+    .domain([2021, 2026])
+    .range([margin.left + 60, width - margin.right]);
+
+  svg.attr("width", width).attr("height", height);
+  
+
+  const defs = svg.append("defs");
+
+// Main gradient
+const barGradient = defs.append("linearGradient")
+  .attr("id", "barGradient")
+  .attr("x1", "0").attr("x2", "1")
+  .attr("y1", "0").attr("y2", "0");
+
+barGradient.selectAll("stop")
+  .data([
+    { offset: "0%", color: "#00a7e1" },
+    { offset: "100%", color: "#0077cc" }
+  ])
+  .enter().append("stop")
+  .attr("offset", d => d.offset)
+  .attr("stop-color", d => d.color);
+
+    // Striped pattern for "present" bars
+    defs.append("pattern")
+      .attr("id", "stripePattern")
+      .attr("patternUnits", "userSpaceOnUse")
+      .attr("width", 6)
+      .attr("height", 6)
+      .attr("patternTransform", "rotate(45)")
+      .append("rect")
+      .attr("width", 3)
+      .attr("height", 6)
+      .attr("fill", "#0077cc");
+      
+    const orangePattern = defs.append("pattern")
+      .attr("id", "stripePatternOrange")
+      .attr("patternUnits", "userSpaceOnUse")
+      .attr("width", 6)
+      .attr("height", 6)
+      .attr("patternTransform", "rotate(45)");
+    
+    // Solid orange background
+    orangePattern.append("rect")
+      .attr("width", 6)
+      .attr("height", 6)
+      .attr("fill", "#ff9966");
+    
+    // White stripes on top
+    orangePattern.append("rect")
+      .attr("width", 3)
+      .attr("height", 6)
+      .attr("fill", "#ffffff");
+
+    const greenPattern= defs.append("pattern")
+      .attr("id", "stripePatternGreen")
+      .attr("patternUnits", "userSpaceOnUse")
+      .attr("width", 6)
+      .attr("height", 6)
+      .attr("patternTransform", "rotate(45)");
+    
+    // white background
+    greenPattern.append("rect")
+      .attr("width", 6)
+      .attr("height", 6)
+      .attr("fill", "#ffffff");
+    
+    // green hatch
+    greenPattern.append("rect")
+      .attr("width", 3)
+      .attr("height", 6)
+      .attr("fill", "#4caf50");
+
+      const purplePattern = defs.append("pattern")
+        .attr("id", "stripePatternPurple")
+        .attr("patternUnits", "userSpaceOnUse")
+        .attr("width", 6)
+        .attr("height", 6)
+        .attr("patternTransform", "rotate(45)");
+
+        // white background
+        purplePattern.append("rect")
+        .attr("width", 6)
+        .attr("height", 6)
+        .attr("fill", "#ffffff");
+
+        // purple hatch
+        purplePattern.append("rect")
+        .attr("width", 3)
+        .attr("height", 6)
+        .attr("fill", "#6b5ea0");
+      
+    const axisGap = 40;
+
+    const clusterColors = {
+        research: ['#a6c8ff', '#3b6ea5'],       // soft blue
+        policy:   ['#d0d6ff', '#6b5ea0'],       // periwinkle
+        evaluation: ['#f4c6c3', '#c97c7c']      // warm amber (not green)
+    };
+
+    Object.entries(clusterColors).forEach(([key, [start, end]]) => {
+    const grad = defs.append("linearGradient")
+        .attr("id", `${key}Gradient`)
+        .attr("x1", "0").attr("x2", "1");
+
+    grad.append("stop").attr("offset", "0%").attr("stop-color", start);
+    grad.append("stop").attr("offset", "100%").attr("stop-color", end);
+    });
+    
+    svg.append("g")
+        .attr("transform", `translate(0, ${margin.top})`)
+        .call(d3.axisTop(xScale)
+                .tickFormat(d3.format("d"))
+                .tickValues(d3.range(2021, 2027)))
+        .call(g => g.select("path").attr("stroke-width", 2))
+        .call(g => g.selectAll("line").attr("stroke-width", 2))
+        .call(g => g.selectAll("text")
+                .style("font-size", "14px")
+                .style("font-weight", "500"));
+
+const todayYear = new Date().getFullYear() + new Date().getMonth() / 12;
+const todayX = xScale(todayYear);
+
+    svg.append("line")
+        .attr("class", "today-line")
+        .attr("x1", todayX)
+        .attr("x2", todayX)
+        .attr("y1", 0)
+        .attr("y2", height - margin.bottom)
+        .attr("stroke", "#999")
+        .attr("stroke-dasharray", "4,4")
+        .attr("stroke-width", 2)
+        .attr("pointer-events", "none");
+      
+
+  const tooltip = d3.select("#tooltip");
+
+  function getEndValue(d) {
+  return d.end === "present"
+    ? new Date().getFullYear() + new Date().getMonth() / 12
+    : d.end;
+}
+
+
+    const education = data.filter(d => d.type === 'bachelor' || d.type === 'master')
+                        .sort((a, b) => getEndValue(b) - getEndValue(a));
+
+    const community = data.filter(d => d.type === 'community')
+                        .sort((a, b) => getEndValue(b) - getEndValue(a));
+
+    const professional = data.filter(d => !['bachelor', 'master', 'community'].includes(d.type || ''))
+                            .sort((a, b) => getEndValue(b) - getEndValue(a));
+
+    education.forEach(d => d.row = 0);
+
+    const rowGap = 1;
+    education.forEach(d => d.row = 0);
+
+    let currentRow = 1; // Leave row 1 blank
+    currentRow += .5;    // <-- this line actually skips the row
+
+    professional.forEach(d => {
+    d.row = currentRow++;
+    });
+
+    community.forEach(d => {
+    d.row = currentRow++;
+    });
+    
+    const ordered = [...education, ...professional, ...community];
+    data.length = 0;
+    data.push(...ordered);
+    
+    const professionalIndex = ordered.findIndex(d => {
+    const type = d.type || 'default';
+    return type !== 'bachelor' && type !== 'master' && type !== 'community';
+    });
+
+    const yProfessional = margin.top + axisGap + (ordered[professionalIndex]?.row ?? 1) * yStep + 20;
+
+    const seenTypes = new Set();
+    const groupBoundaries = [];
+
+    data.forEach(d => {
+    const type = d.type || 'default';
+    if (!seenTypes.has(type)) {
+        seenTypes.add(type);
+        groupBoundaries.push({ row: d.row - 0.1, type }); // place divider just above the first row of this type
+    }
+    });
+
+    svg.selectAll(".group-divider")
+        .data(groupBoundaries)
+        .enter()
+        .append("line")
+        .attr("class", "group-divider")
+        .attr("x1", margin.left)
+        .attr("x2", width - margin.right)
+        .attr("y1", d => margin.top + axisGap + d.row * yStep)
+        .attr("y2", d => margin.top + axisGap + d.row * yStep)
+        .attr("stroke", "#ccc")
+        .attr("stroke-dasharray", "4,4")
+        .attr("stroke-width", 1);
+
+
+  const entryGroups = svg.selectAll(".entry-group")
+    .data(data)
+    .enter()
+    .append("g")
+    .attr("class", "entry-group")
+    .attr("transform", (d, i) => {
+        const r = d.row ?? i;                      
+        return `translate(0, ${margin.top + axisGap + r * yStep})`;
+    });
+    
+    
+    const typeToLabel = {
+        bachelor: "Education",
+        master: "Education",
+        community: "Community",
+        default: "Professional"
+    };
+
+    svg.selectAll(".group-label")
+        .data(groupBoundaries)
+        .enter()
+        .append("text")
+        .attr("class", "group-label")
+        .attr("x", margin.left + 8)
+        .attr("y", d => margin.top + axisGap + d.row * yStep - 7)
+        .text(d => typeToLabel[d.type] || 'Other')
+        .attr("fill", "#666")
+        .style("font-size", "0.85rem")
+        .style("font-weight", "600");
+
+        const logoHeight = 49;
+        const maxLogoWidth = 55;
+        const logoSpacing = 6;
+
+        entryGroups.append("image")
+        .attr("xlink:href", d => d.logo || "fallback.png")
+        .attr("height", logoHeight)
+        .attr("width", maxLogoWidth)
+        .attr("preserveAspectRatio", "xMinYMid meet") // Ensures left align within bounding box
+        .attr("y", () => {
+            const barY = 5;
+            const barHeight = 20;
+            return barY + (barHeight / 2) - (logoHeight / 2);
+        })
+        .attr("x", d => xScale(d.start) - maxLogoWidth - logoSpacing);
+
+    const bars = entryGroups.append("rect")
+
+  .attr("class", d => {
+    let cls = "entry-bar";
+    if (d.end === "present") cls += " present-bar";
+    if (d.type === "community") cls += " community";
+    if (d.type === "bachelor") cls += " bachelor";
+    if (d.type === "master") cls += " master";
+    return cls;
+  })
+  .attr("fill", d => {
+    if (d.end === "present" && d.type === "master") return "url(#stripePatternGreen)";
+    if (d.end === "present" && d.type === "community") return "url(#stripePatternOrange)";
+    if (d.end === "present" && d.cluster === "policy") return "url(#stripePatternPurple)";
+    if (d.end === "present") return "url(#barGradientPresent)";
+    if (d.type === "community") return "#ff9966";
+    if (d.type === "bachelor" || d.type === "master") return "#4caf50";
+    if (d.cluster) return `url(#${d.cluster}Gradient)`;
+    return "url(#barGradient)";
+})
+
+  .attr("x", d => xScale(d.start))
+  .attr("y", 5)
+  .attr("width", d => {
+    const endValue = d.end === "present"
+      ? new Date().getFullYear() + new Date().getMonth() / 12
+      : d.end;
+    return xScale(endValue) - xScale(d.start);
+  })
+  .attr("height", 20)
+  .on("mouseover", (event, d) => {
+  const skillPills = (d.skills || [])
+    .map(s => `<span class='skill-pill'>${toTitleCase(s)}</span>`)
+    .join('');
+
+  const techPills = (d.technologies || [])
+    .map(t => `<span class='tech-pill'>${t}</span>`)
+    .join('');
+
+    const linkMarkup = (d.links || [])
+  .map(link => `<a href="${link.url}" target="_blank" class="entry-link">${link.label}</a>`)
+  .join('<br>');
+
+tooltip.style("visibility", "visible")
+  .html(`
+    <strong>${d.title}${d.type === 'community' ? ' (Volunteer)' : ''}</strong>
+    <div>${d.org}</div>
+    <div class='location'>${d.location}</div>
+    <div class='skill-section'>
+      <span class="label">Focus Areas:</span> ${skillPills}
+    </div>
+    ${techPills ? `<div class='skill-section'><span class="label">Technologies:</span> ${techPills}</div>` : ''}
+    ${linkMarkup ? `<div class='skill-section'><span class="label">Links:</span><br>${linkMarkup}</div>` : ''}
+  `)
+
+    .style("top", (event.pageY - 40) + "px")
+    .style("left", (event.pageX + 12) + "px");
+    })
+  .on("mouseout", () => tooltip.style("visibility", "hidden"));
+
+
+  const pills = document.querySelectorAll(".filter-pill");
+
+  function getActiveValues(group) {
+    return Array.from(document.querySelectorAll(`.filter-pill[data-group='${group}'].active`))
+                .map(btn => btn.dataset.value);
+  }
+
+  function updatePillStates(clicked) {
+    const group = clicked.dataset.group;
+    const value = clicked.dataset.value;
+
+    const groupPills = document.querySelectorAll(`.filter-pill[data-group='${group}']`);
+    const isAll = value === "All";
+
+    if (isAll) {
+      groupPills.forEach(p => p.classList.remove("active"));
+      clicked.classList.add("active");
+    } else {
+      clicked.classList.toggle("active");
+      const anyActive = Array.from(groupPills).some(p => p.dataset.value !== "All" && p.classList.contains("active"));
+      groupPills.forEach(p => {
+        if (p.dataset.value === "All") {
+          if (anyActive) p.classList.remove("active");
+          else p.classList.add("active");
+        }
+      });
+    }
+  }
+
+  const legendData = [
+    { label: "Research", id: "researchGradient" },
+    { label: "Policy/Admin", id: "policyGradient" },
+    ];
+
+    const legend = svg.append("g")
+    .attr("class", "legend")
+    .attr("transform", `translate(${margin.left}, ${yProfessional})`);
+
+
+    legend.selectAll("rect")
+    .data(legendData)
+    .enter()
+    .append("rect")
+    .attr("x", (d, i) => i * 160)
+    .attr("width", 20)
+    .attr("height", 20)
+    .attr("fill", d => `url(#${d.id})`)
+    .attr("rx", 4)
+    .attr("ry", 4);
+
+    legend.selectAll("text")
+    .data(legendData)
+    .enter()
+    .append("text")
+    .attr("x", (d, i) => i * 160 + 30)
+    .attr("y", 15)
+    .text(d => d.label)
+    .style("font-size", "0.9rem")
+    .style("fill", "#444")
+    .style("font-family", "'Segoe UI', sans-serif");
+
+
+  pills.forEach(pill => {
+    pill.addEventListener("click", () => {
+      updatePillStates(pill);
+      updateFilters();
+    });
+  });
+
+  function updateFilters() {
+    const edu = getActiveValues("edu");
+    const policy = getActiveValues("policy");
+    const research = getActiveValues("research");
+    const method = getActiveValues("method");
+
+    function allSelected(v) {
+      return v.length === 1 && v[0] === "All";
+    }
+
+    function has(selected, skillList) {
+        const sel = selected.map(s => s.toLowerCase());
+        return skillList.some(skill => sel.includes(skill));
+    }
+
+
+    bars.classed("dimmed", d =>
+  !(
+    (allSelected(edu) || has(edu, d.skills)) &&
+    (allSelected(policy) || has(policy, d.skills)) &&
+    (allSelected(research) || has(research, d.skills)) &&
+    (allSelected(method) || has(method, d.skills))
+  )
+);
+  }
+
+  updateFilters();
+
+  window.addEventListener('resize', () => {
+  width = getContainerWidth();
+  svg.attr("width", width);
+  xScale.range([margin.left + 60, width - margin.right]);
+
+  bars
+    .attr("x", d => xScale(d.start))
+    .attr("width", d => {
+      const endValue = d.end === "present"
+        ? new Date().getFullYear() + new Date().getMonth() / 12
+        : d.end;
+      return xScale(endValue) - xScale(d.start);
+    });
+
+  svg.selectAll("image")
+    .attr("x", d => xScale(d.start) - 40);
+
+  svg.selectAll(".group-divider")
+    .attr("x2", width - margin.right);
+
+  svg.select(".today-line")
+    .attr("x1", xScale(todayYear))
+    .attr("x2", xScale(todayYear));
+
+  svg.select("g")
+    .call(d3.axisTop(xScale)
+      .tickFormat(d3.format("d"))
+      .tickValues(d3.range(2021, 2027)))
+    .call(g => g.select("path").attr("stroke-width", 2))
+    .call(g => g.selectAll("line").attr("stroke-width", 2))
+    .call(g => g.selectAll("text")
+      .style("font-size", "14px")
+      .style("font-weight", "500"));
+});
+
+</script>
+</body>
+</html>
