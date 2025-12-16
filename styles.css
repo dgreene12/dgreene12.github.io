@@ -238,6 +238,13 @@ body {
   .learn-more:hover {
     color: #004e99;
   }
+
+  .materials-note {
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: #777;
+    text-align: center;
+  }
   
 /* Responsive design */
 @media (max-width: 768px) {
@@ -259,16 +266,99 @@ body {
     }
 
 
-        .hero {
-          padding: 60px 20px;
-          background-position: center top;
-        }
+    .hero {
+        min-height: auto;       
+        align-items: flex-start; 
+        padding-top: 20px;       
+        padding-bottom: 40px;
+      }
 
     .hero h1 {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
+        margin-top: 8px;
+        margin-bottom: 6px;
     }
 
     .hero p {
         font-size: 1.2rem;
+        margin-top: 0;
     }
+
+    .intro-section {
+        padding: 10px 5px;
+        gap: 12px;
+      }
+
+      .headshot {
+        width: 280px;
+        aspect-ratio: 3 / 4;
+        object-fit: cover;
+        object-position: center 60%;
+        display: block;
+        margin: 0 auto;
+      }
 }
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .hero {
+      min-height: auto;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 40px 24px;
+    }
+  
+    .intro-section {
+      flex-direction: column;   
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      max-width: 760px;
+    }
+  
+    .headshot {
+      width: 360px;              
+      display: block;
+      margin: 0 auto;
+    }
+  
+    .container {
+      max-width: 90%;
+    }
+  
+    .hero h1 {
+      font-size: 3rem;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+  
+    .tagline {
+      font-size: 1.2rem;
+      max-width: 640px;
+    }
+  }
+
+  @media (min-width: 1025px) and (max-width: 1366px) {
+    .hero {
+      min-height: auto;
+      justify-content: flex-start;
+      padding-top: 48px;
+      padding-bottom: 24px;
+    }
+  
+    .intro-section {
+      flex-wrap: nowrap;
+      gap: 32px;
+      padding: 32px;
+    }
+  
+    .headshot {
+      width: 380px;
+    }
+  }
+
+  @media (hover: none) and (pointer: coarse) {
+    .hero {
+      min-height: auto;
+      justify-content: flex-start;
+    }
+  }
