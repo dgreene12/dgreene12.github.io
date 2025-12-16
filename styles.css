@@ -269,8 +269,8 @@ body {
     .hero {
         min-height: auto;       
         align-items: flex-start; 
-        padding-top: 20px;       
-        padding-bottom: 40px;
+        padding-top: 14px;       
+        padding-bottom: 28px;
       }
 
     .hero h1 {
